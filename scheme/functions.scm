@@ -1,3 +1,4 @@
+(display "Running file `functions.scm`\n")
 (define (contains aVal aList)
 	(if (null? aList) #f ; base case
 			(if (eq? aVal (car aList)) ; is 1st element it
