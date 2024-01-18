@@ -115,3 +115,38 @@
 (newline)
 
 ; Exercise 7: Write a function that takes a list of numbers as a parameter and returns a list with the largest and smallest numbers in the input list.
+(display "Exercise 7:\n")
+(define (listMinMax lst) (list (listMin lst) (listMax lst)))
+(define (listMin lst) (listMinHelper lst (car lst)))
+(define (listMinHelper lst currmin)
+	(if (null? lst)
+	; true list empty
+	currmin
+	; false list not empty
+	(if (< (car lst) currmin)
+			; true new minimium
+			(listMinHelper (cdr lst) (car lst))
+			; false no new minimium
+			(listMinHelper (cdr lst) currmin)
+			)
+	))
+(define (listMax lst) (listMaxHelper lst (car lst)))
+(define (listMaxHelper lst currmax)
+	(if (null? lst)
+	; true list empty
+			currmax
+	; false list not empty
+	(if (> (car lst) currmax)
+			; true new max
+			(listMaxHelper (cdr lst) (car lst))
+			; false no new max
+			(listMaxHelper (cdr lst) currmax)
+			)
+	))
+
+(display "(listMinMax '(1 6 3 5)) = ")
+(display (listMinMax '(1 6 3 5)))
+(newline)
+(display "(listMinMax '(4 9 -1 2)) = ")
+(display (listMinMax '(4 9 -1 2)))
+(newline)
