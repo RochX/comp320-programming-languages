@@ -3,4 +3,5 @@ Repository for COMP-320 Programming Languages class at Kalamazoo College (winter
 
 ## About Folders
 - `notes` folder contains notes (often written in markdown) taken in each class session.
-- `scheme` folder contains scheme/LISP programs.
+- `reflections` folder contains the weekly reflection assignments required for the class.
+- `scheme` folder contains Scheme/LISP programs.
