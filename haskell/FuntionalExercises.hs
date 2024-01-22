@@ -1,0 +1,7 @@
+-- Exercise 1: `contains` function f(x, y) == True if x in list y
+-- Exercise 2: `removeAll` function f(l, x) returns list with all instances of x removed
+-- Exercise 3: `deleteList` function f(l1, l2) returns list with all instances of l2
+-- Exercise 4: `removeAllList` function f(l1, l2) returns list with all elements of l2 removed
+-- Exercise 5: `deleteLast` function f(l) returns list with last element of l removed
+-- Exercise 6: reverse list
+-- Exercise 7: list min and max
