@@ -22,8 +22,8 @@ containsTestSuite =
 removeAll :: [Int] -> Int -> [Int]
 removeAll [] _ = []
 removeAll lst x
-  | (head lst) == x = removeAll (tail lst) x
-  | (head lst) /= x = (head lst) : removeAll (tail lst) x
+  | head lst == x = removeAll (tail lst) x
+  | head lst /= x = head lst : removeAll (tail lst) x
 
 removeAllTestSuite =
   TestSuite "Test removeAll function"
@@ -38,21 +38,21 @@ removeAllTestSuite =
 deleteList :: [[Int]] -> [Int] -> [[Int]]
 deleteList [] _ = []
 deleteList lst x
-  | (head lst) == x = deleteList (tail lst) x
-  | (head lst) /= x = (head lst) : deleteList (tail lst) x
+  | head lst == x = deleteList (tail lst) x
+  | head lst /= x = head lst : deleteList (tail lst) x
 
 deleteListTestSuite =
   TestSuite "Test deleteList function"
   [
-    Test "deleteList [[1,2],[1,3],[1,2]] [1,2]" (deleteList[[1,2],[1,3],[1,2]] [1,2] == [[1,3]])
+    Test "deleteList [[1,2],[1,3],[1,2]] [1,2]" (deleteList [[1,2],[1,3],[1,2]] [1,2] == [[1,3]])
   ]
 
 -- Exercise 4: `removeAllFromList` function f(l1, l2) returns list with all elements of l2 removed
 removeAllFromList :: [Int] -> [Int] -> [Int]
 removeAllFromList [] _ = []
 removeAllFromList lst x
-  | (head lst) `contains` x = removeAllFromList (tail lst) x
-  | otherwise = (head lst) : removeAllFromList (tail lst) x
+  | head lst `contains` x = removeAllFromList (tail lst) x
+  | otherwise = head lst : removeAllFromList (tail lst) x
 
 removeAllFromListTestSuite =
   TestSuite "Test removeAllFromList"
@@ -99,8 +99,8 @@ lstMin [x, y]
   | x <= y = x
   | x > y = y
 lstMin lst
-  | lst !! 0 > lst !! 1 = lstMin (tail lst)
-  | lst !! 0 <= lst !! 1 = lstMin (lst !! 0 : tail (tail lst))
+  | head lst > lst !! 1 = lstMin (tail lst)
+  | head lst <= lst !! 1 = lstMin (head lst : tail (tail lst))
 
 lstMax :: [Int] -> Int
 lstMax [x] = x
@@ -108,8 +108,8 @@ lstMax [x, y]
   | x > y = x
   | x <= y = y
 lstMax lst
-  | lst !! 0 <= lst !! 1 = lstMax (tail lst) -- remove first element
-  | lst !! 0 > lst !! 1 = lstMax (lst !! 0 : tail (tail lst)) -- remove second element
+  | head lst <= lst !! 1 = lstMax (tail lst) -- remove first element
+  | head lst > lst !! 1 = lstMax (head lst : tail (tail lst)) -- remove second element
 
 lstMinMax :: [Int] -> (Int, Int)
 lstMinMax lst = (lstMin lst, lstMax lst)
