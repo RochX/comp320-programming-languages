@@ -10,26 +10,18 @@
   I like this way of defining functions as we don't have to create the pattern checking with `if` statements like you would have to do in other non-functional languages.
 
 
-
 ## How the concepts from this week apply to:
  ### Java (or Python, if you prefer)
 
  > One concept that applies to Java is the idea of testing our functions with a dedicated class.
-
- ### My Language: AProgrammingLanguage
-
- > TODO
-
+  By having to create a dedicated set of tests for our functions, we can easily see if the function is working as intended.
+  It also allows us to make changes to functions to add additional functionality and determine whether we have broken previous uses of the function.
 
 ## Reflection on the language(s) presented this week: Haskell
 > I found Haskell to be a more interesting and intuitive language than Scheme.
   I found the reading of [Learn You a Haskell](https://learnyouahaskell.com/chapters) to be very helpful for getting the basics down.
-  Haskell feels like a powerful functional langauge that is easy to use. TODO FINISH
-
-[You do not need to reflect on the presentation of your own language]
-
-- Could include similarities and differences between language(s) presented this week and Java (or Python) and your own language.
-- Could address how language(s) presented this week address the concepts introduced this week, and concepts discussed earlier in the quarter.
+  Haskell feels like a powerful functional langauge that is easy to use.
+  I still found that I had to change my mindset to coding in a functional manner, but the syntax (and mainly the large amount of parenthesis) did not get in the way of programming, unlike Scheme.
 
 ## Answers/Reflections regarding additional questions posed for this week:
 One of the differences between Scheme and Haskell is whether operators such as + and == are infix or prefix. Give an advantage of each.
@@ -39,8 +31,13 @@ One of the differences between Scheme and Haskell is whether operators such as +
 
 Pick at least one other difference between these two functional languages to discuss using the language evaluation criteria introduced in Chapter 1 (readability, writeability, etc.).
 
-> TODO
+> There is a significant readability difference between Haskell and Scheme.
+  In Scheme parentheses are required for every expression, and so when reading a complicated Scheme function, it is hard to determine what elements belong to which functions.
+  In this regard Haskell is much easier to read.
+  While Haskell still has cases where parentheses are required, this makes it easier to tell when parentheses are used for a particular purpose, such as in the case `contains x (tail lst)` where `tail lst` is the 2nd argument of the `contains` functions, rather than there being 3 arguments.
 
 What is lazy evaluation, and what is the connection to Haskell? (And why does that make the [xkcd Very Important Handout](https://xkcd.com/1312/) even funnier?) 
 
-> TODO
+> Lazy evaluation is where expressions are not evaluated until they are needed by other computations.
+  Haskell uses lazy evaluation when running programs.
+  The joke with the xkcd comic is funny because if no Haskell program is run, then Haskell itself isn't evaluated.
