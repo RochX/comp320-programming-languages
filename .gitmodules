@@ -1,0 +1,3 @@
+[submodule "jay_interpreter"]
+	path = jay_interpreter
+	url = git@kit.cs.kzoo.edu:r4294
