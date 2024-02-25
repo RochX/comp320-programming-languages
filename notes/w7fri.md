@@ -6,7 +6,7 @@ For loops.
 
 Declaring variables in the middle of the program.
 
-Operator Predence:
+Operator Precedence:
 - It appears that handled in the first pass?
 - Since our expressions are put into prefix, we don't need order of operations.
 - There is no good example of how the first pass would handle a statement like `x = 1 + 2 * 2`.
