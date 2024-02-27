@@ -55,12 +55,12 @@ validLoc :: Board -> Int -> Int -> Bool
 -- setVal board rowIndex colIndex newValue
 --   Returns a new board equivalent to board EXCEPT
 --   that the value at location (rowIndex, colIndex) is newValue.
--- setVal :: Board -> Int -> Int ->Integer -> Board
-  -- USES
-     -- setValInRow R colIndex newValue
-     --   Returns a new row equivalent to R EXCEPT
-     --   that the value in column colIndex is newValue.
-     -- setValInRow :: Row -> Int ->Integer -> Row
+setVal :: Board -> Int -> Int -> Integer -> Board
+
+-- setValInRow row colIndex newValue
+--  Returns a new row equivalent to row EXCEPT
+--   that the value at location (colIndex) is newValue.
+setValInRow :: Row -> Int -> Integer -> Row
 
 ------------------------------------------------------
 -- USEFUL FUNCTION FOR TESTING PURPOSES
@@ -68,8 +68,8 @@ validLoc :: Board -> Int -> Int -> Bool
 
 -- mkTestBoard N
 --   Creates an N x N board whose 2-digit values encode their location:
---   the first digit is the row number (starting at 1) and the second is
---   the column number (starting at 1).  For example,
+--   the first digit is the row number (starting at 0) and the second is
+--   the column number (starting at 0).  For example,
 --     mkTestBoard 3
 --   creates the following board:
 --     [[00,01,02],[10,11,12],[20,21,22]]
@@ -119,7 +119,22 @@ validLoc board row col
   | col >= length (head board) = False
   | otherwise = True
 
+------------------------------------------------------
+-- BOARD SETTER FUNCTIONS
+------------------------------------------------------
+setValInRow row c val = take c row ++ val : (drop (c+1)) row
+
+setVal board row col val
+  | validLoc board row col = take row board ++ [setValInRow (board !! row) col val] ++ drop (row+1) board
+  | otherwise = error "Index out of range"
+
+------------------------------------------------------
+-- TEST SUITE
+------------------------------------------------------
+
+-- creates board [[00,01,02, 03],[10,11,12, 13],[20,21,22, 23], [30, 31, 32, 33]]
 testBoard = mkTestBoard 4
+testRow = head testBoard
 boardInterfaceTestSuite = 
   TestSuite 
   "Test the BoardInterface functions on a 4 by 4 board"
@@ -138,5 +153,18 @@ boardInterfaceTestSuite =
       Test "Check negative index on location" (validLoc testBoard (-1) (-1) == False),
       Test "Check zero index on location" (validLoc testBoard 0 1),
       Test "Check index greater than board size on location" (validLoc testBoard 0 5 == False)
+    ],
+    TestSuite "Functions the set the board"
+    [
+      Test "Set first element of first row" (setValInRow testRow 0 (-1) == [-1, 01, 02, 03]),
+      Test "Set second element of first row" (setValInRow testRow 1 (-1) == [00, -1, 02, 03]),
+      Test "Set last element of first row" (setValInRow testRow 3 (-1) == [00, 01, 02, -1]),
+      Test "Getting a row and setting it" (setValInRow (testBoard !! 1) 0 (-1) == [-1, 11, 12, 13]),
+      Test "Setting in upper left corner" (setVal testBoard 0 0 (-1) == [[-1,01,02, 03],[10,11,12, 13],[20,21,22, 23], [30, 31, 32, 33]]),
+      Test "Setting in first row of board" (setVal testBoard 0 1 (-1) == [[00,-1,02, 03],[10,11,12, 13],[20,21,22, 23], [30, 31, 32, 33]]),
+      Test "Setting in second row of board" (setVal testBoard 1 1 (-1) == [[00,01,02, 03],[10,-1,12, 13],[20,21,22, 23], [30, 31, 32, 33]]),
+      Test "Setting in bottom right corner" (setVal testBoard 3 3 (-1) == [[00,01,02, 03],[10,11,12, 13],[20,21,22, 23], [30, 31, 32, -1]])
+      -- For now testing an invalid index throws an error, so running this test will error
+      -- Test "Trying to set an invalid index" (setVal testBoard 4 0 (-1) == [])
     ]
   ]
