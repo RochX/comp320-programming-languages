@@ -3,7 +3,7 @@
 -- Template by Alyce Brady
 -- Modified and completed Xavier Silva, Winter 2024
 
-module Board where
+module BoardInterface where
 
 import TestSuiteSupportModule
 
@@ -126,6 +126,8 @@ setValInRow row c val = take c row ++ val : (drop (c+1)) row
 
 setVal board row col val
   | validLoc board row col = take row board ++ [setValInRow (board !! row) col val] ++ drop (row+1) board
+  | not $ validIndex board row = error "Row out of range"
+  | not $ validIndex board col = error "Col out of range"
   | otherwise = error "Index out of range"
 
 ------------------------------------------------------
