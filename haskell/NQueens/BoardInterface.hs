@@ -46,11 +46,11 @@ getCell :: Board -> Int -> Int -> Integer
 
 -- validIndex board index
 --   Returns True if the index (a row or column index) is in range.
--- validIndex :: Board -> Int -> Bool
+validIndex :: Board -> Int -> Bool
 
 -- validLoc board rowIndex colIndex
 --   Returns True if location (rowIndex, colIndex) is in range (on the board).
--- validLoc :: Board -> Int -> Int -> Bool
+validLoc :: Board -> Int -> Int -> Bool
 
 -- setVal board rowIndex colIndex newValue
 --   Returns a new board equivalent to board EXCEPT
@@ -104,6 +104,20 @@ getCell board row col = board !! row !! col
 -- getCol B c
 getCol board colNum = [ getCell board rowNum colNum | rowNum <- [ 0 .. length board - 1]]
 
+------------------------------------------------------
+-- FUNCTIONS TO VALIDATE LOCATIONS
+------------------------------------------------------
+validIndex board index 
+  | index < 0 = False
+  | index >= length board = False
+  | otherwise = True
+
+validLoc board row col
+  | row < 0 = False
+  | col < 0 = False
+  | row >= length board = False
+  | col >= length (head board) = False
+  | otherwise = True
 
 testBoard = mkTestBoard 4
 boardInterfaceTestSuite = 
@@ -115,5 +129,14 @@ boardInterfaceTestSuite =
       Test "Get First Row" (getRow testBoard 0 == [00, 01, 02, 03]),
       Test "Get First Column" (getCol testBoard 0 == [00, 10, 20, 30]),
       Test "Get cell in the middle of the board" (getCell testBoard 1 1 == 11)
+    ],
+    TestSuite "Functions to check if index out of range"
+    [
+      Test "Check negative index on row/col" (validIndex testBoard (-1) == False),
+      Test "Check zero index on row/col" (validIndex testBoard 0),
+      Test "Check index greater than board size on row/col" (validIndex testBoard 5 == False),
+      Test "Check negative index on location" (validLoc testBoard (-1) (-1) == False),
+      Test "Check zero index on location" (validLoc testBoard 0 1),
+      Test "Check index greater than board size on location" (validLoc testBoard 0 5 == False)
     ]
   ]
