@@ -40,9 +40,10 @@ nQueens n = nQueensSolver 0 0 (mkBoard n)
   where
     nQueensSolver :: Int -> Int -> Board -> Board
     nQueensSolver row col board
-      | row >= length board = board -- going too many rows means we found solution
+      -- if board is invalid, then no need to continue; next step handles trying next
+      | not $ validBoard board = []
       | col >= length board = [] -- going too many column means no solution exists
-      -- TODO add condition something like `not $ validBoard board = []` to tell us whether a board is bad
+      | row >= length board = board -- going too many rows means we found solution
       | otherwise = let newBoard = setVal board row col 1
         in 
           if null (nQueensSolver (row+1) col newBoard) -- check if list empty
