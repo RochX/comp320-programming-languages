@@ -12,11 +12,12 @@ import TestSuiteSupportModule
 nQueens :: Int -> Board
 
 -- cellIsAttacked board row col
---    Returns true if the cell at location (row, col) is attacked by a queen on the board
+--    Returns true if the cell at location (row, col) is attacked by another queen on the board
 cellIsAttacked :: Board -> Int -> Int -> Bool
 cellIsAttacked board row col =
   let attackingCells = getRow board row ++ getCol board col ++ getMajorDiagonal board row col ++ getMinorDiagonal board row col
-    in (sum . map abs) attackingCells > 0
+      sumOffset = getCell board row col * 4 -- we use this offset in order to not count the cell at location (row, col)
+    in (sum . map abs) attackingCells - sumOffset > 0
 
 
 nQueens n = nQueensSolver 0 0 (mkBoard n)
@@ -39,7 +40,7 @@ nQueensTestSuite =
   [
     TestSuite "Test cellIsAttacked function"
     [
-      Test "Cell queen is in" (cellIsAttacked oneQueenOnBoard 1 1),
+      Test "Cell queen is in" (not $ cellIsAttacked oneQueenOnBoard 1 1),
       Test "Same row" (cellIsAttacked oneQueenOnBoard 1 0),
       Test "Same column" (cellIsAttacked oneQueenOnBoard 0 1),
       Test "Same major diagonal" (cellIsAttacked oneQueenOnBoard 0 0),
