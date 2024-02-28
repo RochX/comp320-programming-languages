@@ -19,6 +19,22 @@ cellIsAttacked board row col =
       sumOffset = getCell board row col * 4 -- we use this offset in order to not count the cell at location (row, col)
     in (sum . map abs) attackingCells - sumOffset > 0
 
+-- validBoard board
+--    Returns true if board has no queens attacking each other.
+--    Any non-zero value on the board is considered to be a queen.
+validBoard :: Board -> Bool
+validBoard board = validBoardHelper board 0 0
+  where
+    validBoardHelper :: Board -> Int -> Int -> Bool
+    validBoardHelper board row col
+      -- move on to next row if col index too large
+      | not (validIndex board col) = validBoardHelper board (row+1) 0
+      -- row too large means we're done; use True because we AND with Bools in previous calls
+      | not (validIndex board row) = True 
+      -- no queen in cell: don't need to check
+      | getCell board row col == 0 = validBoardHelper board row (col+1)
+      -- queen in cell: check if it's not attacked and move on
+      | getCell board row col /= 0 = not (cellIsAttacked board row col) && validBoardHelper board row (col+1) 
 
 nQueens n = nQueensSolver 0 0 (mkBoard n)
   where
@@ -33,18 +49,28 @@ nQueens n = nQueensSolver 0 0 (mkBoard n)
           then nQueensSolver (row+1) (col+1) newBoard -- if empty we need to try next solution
           else nQueensSolver (row+1) 0 newBoard -- if not empty then solution found
 
-oneQueenOnBoard = setVal (mkBoard 4) 1 1 1
+oneQueenMiddleOfBoard = setVal (mkBoard 4) 1 1 1
+oneQueenTopLeftOfBoard = setVal (mkBoard 4) 0 0 1
+exampleInvalidBoard = setVal oneQueenTopLeftOfBoard 1 1 1
+exampleValidBoard = setVal oneQueenTopLeftOfBoard 1 2 1
 nQueensTestSuite =
   TestSuite
   "Test NQueens"
   [
     TestSuite "Test cellIsAttacked function"
     [
-      Test "Cell queen is in" (not $ cellIsAttacked oneQueenOnBoard 1 1),
-      Test "Same row" (cellIsAttacked oneQueenOnBoard 1 0),
-      Test "Same column" (cellIsAttacked oneQueenOnBoard 0 1),
-      Test "Same major diagonal" (cellIsAttacked oneQueenOnBoard 0 0),
-      Test "Same minor diagonal" (cellIsAttacked oneQueenOnBoard 0 2),
-      Test "Cell not attacked" (not $ cellIsAttacked oneQueenOnBoard 2 3)
+      Test "Cell queen is in" (not $ cellIsAttacked oneQueenMiddleOfBoard 1 1),
+      Test "Same row" (cellIsAttacked oneQueenMiddleOfBoard 1 0),
+      Test "Same column" (cellIsAttacked oneQueenMiddleOfBoard 0 1),
+      Test "Same major diagonal" (cellIsAttacked oneQueenMiddleOfBoard 0 0),
+      Test "Same minor diagonal" (cellIsAttacked oneQueenMiddleOfBoard 0 2),
+      Test "Cell not attacked" (not $ cellIsAttacked oneQueenMiddleOfBoard 2 3)
+    ],
+    TestSuite "Test validBoard function"
+    [
+      Test "Empty board" (validBoard $ mkBoard 4),
+      Test "One queen on board" (validBoard oneQueenTopLeftOfBoard),
+      Test "Two queens attacking each other" (not $ validBoard exampleInvalidBoard),
+      Test "Two queens not attacking each other" (validBoard exampleValidBoard)
     ]
   ]
