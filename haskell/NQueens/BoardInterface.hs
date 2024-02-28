@@ -6,9 +6,11 @@
 module BoardInterface where
 
 import TestSuiteSupportModule
+import Data.List (sort)
 
 type Row = [Integer]
 type Column = [Integer]
+type Diagonal = [Integer]
 type Board = [Row]
 
 -- *******************************
@@ -43,6 +45,14 @@ getCol :: Board -> Int -> Column
 --   Returns the contents of the cell at location (rowIndex, colIndex)
 --   on the board.
 getCell :: Board -> Int -> Int -> Integer
+
+-- getMajorDiagonal board rowIndex colIndex
+--    Returns diagonal of shape \ that includes location (rowIndex, colIndex)
+getMajorDiagonal :: Board -> Int -> Int -> Diagonal
+
+-- getMinorDiagonal board rowIndex colIndex
+--    Returns diagonal of shape / that includes location (rowIndex, colIndex)
+getMinorDiagonal :: Board -> Int -> Int -> Diagonal
 
 -- validIndex board index
 --   Returns True if the index (a row or column index) is in range.
@@ -99,15 +109,33 @@ mkBoard n = replicate n (mkRow n)
 getRow board row = board !! row
 
 -- getCell B r c
-getCell board row col = board !! row !! col
+getCell board row col
+  | row >= length board = error "Row index too large"
+  | col >= length board = error "Col index too large"
+  | otherwise = board !! row !! col
 
 -- getCol B c
 getCol board colNum = [ getCell board rowNum colNum | rowNum <- [ 0 .. length board - 1]]
 
+-- getMajorDiagonal B r c
+getMajorDiagonal board row col = 
+  let n = length board
+      baseMajorDiagonal = map (\x -> (x,x)) [-n..n]
+      offsetMajorDiagonal = map (\(x,y) -> (x+row, y+col)) baseMajorDiagonal
+    in [ getCell board (fst cell) (snd cell) | cell <- filter (\(x,y) -> validIndex board x && validIndex board y) offsetMajorDiagonal ]
+
+-- getMinorDiagonal B r c
+getMinorDiagonal board row col = 
+  let n = length board
+      baseMinorDiagonal = map (\x -> (-x,x)) [-n..n]
+      offsetMinorDiagonal = map (\(x,y) -> (x+row, y+col)) baseMinorDiagonal
+    in [ getCell board (fst cell) (snd cell) | cell <- filter (\(x,y) -> validIndex board x && validIndex board y) offsetMinorDiagonal ]
+
+
 ------------------------------------------------------
 -- FUNCTIONS TO VALIDATE LOCATIONS
 ------------------------------------------------------
-validIndex board index 
+validIndex board index
   | index < 0 = False
   | index >= length board = False
   | otherwise = True
@@ -134,18 +162,35 @@ setVal board row col val
 -- TEST SUITE
 ------------------------------------------------------
 
+-- sameElems A B
+--    Returns true if A and B have the same elements without caring about order
+sameElems :: (Ord a) => [a] -> [a] -> Bool
+sameElems a b = sort a == sort b
+
 -- creates board [[00,01,02, 03],[10,11,12, 13],[20,21,22, 23], [30, 31, 32, 33]]
 testBoard = mkTestBoard 4
 testRow = head testBoard
-boardInterfaceTestSuite = 
-  TestSuite 
+boardInterfaceTestSuite =
+  TestSuite
   "Test the BoardInterface functions on a 4 by 4 board"
   [
     TestSuite "Functions to access elements of a board"
     [
       Test "Get First Row" (getRow testBoard 0 == [00, 01, 02, 03]),
       Test "Get First Column" (getCol testBoard 0 == [00, 10, 20, 30]),
-      Test "Get cell in the middle of the board" (getCell testBoard 1 1 == 11)
+      Test "Get cell in the middle of the board" (getCell testBoard 1 1 == 11),
+      TestSuite "Major Diagonal"
+      [
+        Test "Get major diagonal" (getMajorDiagonal testBoard 0 0 `sameElems` [00, 11, 22, 33]),
+        Test "Get an offset major diagonal" (getMajorDiagonal testBoard 1 0 `sameElems` [10, 21, 32]),
+        Test "Get another offset major diagonal" (getMajorDiagonal testBoard 0 3 `sameElems` [03])
+      ],
+      TestSuite "Minor Diagonal"
+      [
+        Test "Get minor diagonal" (getMinorDiagonal testBoard 0 3 `sameElems` [03, 12, 21, 30]),
+        Test "Get offset minor diagonal" (getMinorDiagonal testBoard 1 1 `sameElems` [02, 11, 20]),
+        Test "Get another offset minor diagonal" (getMinorDiagonal testBoard 0 0 `sameElems` [00])
+      ]
     ],
     TestSuite "Functions to check if index out of range"
     [
