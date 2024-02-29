@@ -1,6 +1,8 @@
 -- This module solves the NQueens problem
 -- Uses the BoardInterface
 
+-- Authored by Xavier Silva, Feburary 2024
+
 module NQueens where
 
 import BoardInterface
@@ -9,15 +11,33 @@ import TestSuiteSupportModule
 -- cellIsAttacked board row col
 --    Returns true if the cell at location (row, col) is attacked by another queen on the board
 cellIsAttacked :: Board -> Int -> Int -> Bool
-cellIsAttacked board row col =
-  let attackingCells = getRow board row ++ getCol board col ++ getMajorDiagonal board row col ++ getMinorDiagonal board row col
-      sumOffset = getCell board row col * 4 -- we use this offset in order to not count the cell at location (row, col)
-    in (sum . map abs) attackingCells - sumOffset > 0
 
 -- validBoard board
 --    Returns true if board has no queens attacking each other.
 --    Any non-zero value on the board is considered to be a queen.
 validBoard :: Board -> Bool
+
+-- generateNextValidBoards r Boards
+--    Precondition: r is nonnegative and r < length Board
+--                  All boards in Boards are the same size
+--    Returns a list of all valid boards that can be made by adding a queen in row r
+generateNextValidBoards :: Int -> [Board] -> [Board]
+
+-- nQueens N
+--    Returns either empty list or a list of N x N board(s) with solutions to N queens problem.
+--    Empty list indicates that no solution exists.
+nQueens :: Int -> [Board]
+
+-- ************************************
+-- *           IMPLEMENTATION 
+-- ************************************
+
+cellIsAttacked board row col =
+  let attackingCells = getRow board row ++ getCol board col ++ getMajorDiagonal board row col ++ getMinorDiagonal board row col
+      sumOffset = getCell board row col * 4 -- we use this offset in order to not count the cell at location (row, col)
+    in (sum . map abs) attackingCells - sumOffset > 0
+
+
 validBoard board = validBoardHelper board 0 0
   where
     validBoardHelper :: Board -> Int -> Int -> Bool
@@ -28,25 +48,19 @@ validBoard board = validBoardHelper board 0 0
       | not (validIndex board row) = True
       -- no queen in cell: don't need to check
       | getCell board row col == 0 = validBoardHelper board row (col+1)
-      -- queen in cell: check if it's not attacked and move on
+      -- queen in cell: check if it's not attacked and if its not attacked move on
       | getCell board row col /= 0 = not (cellIsAttacked board row col) && validBoardHelper board row (col+1)
 
--- generateNextValidBoards r Boards
---    Precondition: r is nonnegative and r < length Board
---                  All boards in Boards are the same size
---    Returns a list of all valid boards that can be made by adding a queen in row r
-generateNextValidBoards :: Int -> [Board] -> [Board]
+
 generateNextValidBoards row prevBoards =
   filter validBoard (generateNextBoards row prevBoards)
   where
     n = length $ head prevBoards
+    -- this function places a queen in every possible position in the row given by argument row
     generateNextBoards :: Int -> [Board] -> [Board]
     generateNextBoards row prevBoards = concatMap (\board -> map (\col -> setVal board row col 1) [0..n-1]) prevBoards
 
--- nQueens N
---    Returns either empty list or a list of N x N board(s) with solutions to N queens problem.
---    Empty list indicates that no solution exists.
-nQueens :: Int -> [Board]
+
 nQueens n = nQueensSolver 0 [mkBoard n]
   where
     nQueensSolver :: Int -> [Board] -> [Board]
@@ -54,6 +68,10 @@ nQueens n = nQueensSolver 0 [mkBoard n]
       | null prevBoards = []
       | row >= length (head prevBoards) = prevBoards
       | otherwise = nQueensSolver (row+1) (generateNextValidBoards row prevBoards)
+
+------------------------------------------------------
+-- TEST SUITE
+------------------------------------------------------
 
 oneQueenMiddleOfBoard = setVal (mkBoard 4) 1 1 1
 oneQueenTopLeftOfBoard = setVal (mkBoard 4) 0 0 1
