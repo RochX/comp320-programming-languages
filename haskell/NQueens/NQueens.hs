@@ -6,11 +6,6 @@ module NQueens where
 import BoardInterface
 import TestSuiteSupportModule
 
--- nQueens N
---    Returns either empty list or N x N board with solution to N queens problem.
---    Empty list indicates that no solution exists.
-nQueens :: Int -> Board
-
 -- cellIsAttacked board row col
 --    Returns true if the cell at location (row, col) is attacked by another queen on the board
 cellIsAttacked :: Board -> Int -> Int -> Bool
@@ -30,25 +25,33 @@ validBoard board = validBoardHelper board 0 0
       -- move on to next row if col index too large
       | not (validIndex board col) = validBoardHelper board (row+1) 0
       -- row too large means we're done; use True because we AND with Bools in previous calls
-      | not (validIndex board row) = True 
+      | not (validIndex board row) = True
       -- no queen in cell: don't need to check
       | getCell board row col == 0 = validBoardHelper board row (col+1)
       -- queen in cell: check if it's not attacked and move on
-      | getCell board row col /= 0 = not (cellIsAttacked board row col) && validBoardHelper board row (col+1) 
+      | getCell board row col /= 0 = not (cellIsAttacked board row col) && validBoardHelper board row (col+1)
 
-nQueens n = nQueensSolver 0 0 (mkBoard n)
+-- generateNextValidBoards r Boards
+--    Precondition: r is nonnegative and r < length Board
+--                  All boards in Boards are the same size
+--    Returns a list of all valid boards that can be made by adding a queen in row r
+generateNextValidBoards :: Int -> [Board] -> [Board]
+generateNextValidBoards row prevBoards =
+  filter validBoard (generateNextBoards row prevBoards)
   where
-    nQueensSolver :: Int -> Int -> Board -> Board
-    nQueensSolver row col board
-      -- if board is invalid, then no need to continue; next step handles trying next
-      | not $ validBoard board = []
-      | col >= length board = [] -- going too many column means no solution exists
-      | row >= length board = board -- going too many rows means we found solution
-      | otherwise = let newBoard = setVal board row col 1
-        in 
-          if null (nQueensSolver (row+1) col newBoard) -- check if list empty
-          then nQueensSolver (row+1) (col+1) newBoard -- if empty we need to try next solution
-          else nQueensSolver (row+1) 0 newBoard -- if not empty then solution found
+    n = length $ head prevBoards
+    generateNextBoards :: Int -> [Board] -> [Board]
+    generateNextBoards row prevBoards = concatMap (\board -> map (\col -> setVal board row col 1) [0..n-1]) prevBoards
+
+-- nQueens N
+--    Returns either empty list or a list of N x N board(s) with solutions to N queens problem.
+--    Empty list indicates that no solution exists.
+nQueens :: Int -> [Board]
+nQueens n = nQueensSolver 0 [mkBoard n]
+  where
+    nQueensSolver :: Int -> [Board] -> [Board]
+    nQueensSolver row prevBoards
+      | row >= length (head prevBoards) = prevBoards
 
 oneQueenMiddleOfBoard = setVal (mkBoard 4) 1 1 1
 oneQueenTopLeftOfBoard = setVal (mkBoard 4) 0 0 1
@@ -73,5 +76,10 @@ nQueensTestSuite =
       Test "One queen on board" (validBoard oneQueenTopLeftOfBoard),
       Test "Two queens attacking each other" (not $ validBoard exampleInvalidBoard),
       Test "Two queens not attacking each other" (validBoard exampleValidBoard)
+    ],
+    TestSuite "Test generateNextValidBoards function"
+    [
+      Test "Generating first row from empty board" (generateNextValidBoards 0 [mkBoard 4] == [[[1,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[0,1,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[0,0,1,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[0,0,0,1],[0,0,0,0],[0,0,0,0],[0,0,0,0]]]),
+      Test "Generating valid boards with top left corner and second row" (generateNextValidBoards 1 [oneQueenTopLeftOfBoard] == [[[1,0,0,0],[0,0,1,0],[0,0,0,0],[0,0,0,0]],[[1,0,0,0],[0,0,0,1],[0,0,0,0],[0,0,0,0]]])
     ]
   ]
