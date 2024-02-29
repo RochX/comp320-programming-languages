@@ -51,7 +51,9 @@ nQueens n = nQueensSolver 0 [mkBoard n]
   where
     nQueensSolver :: Int -> [Board] -> [Board]
     nQueensSolver row prevBoards
+      | null prevBoards = []
       | row >= length (head prevBoards) = prevBoards
+      | otherwise = nQueensSolver (row+1) (generateNextValidBoards row prevBoards)
 
 oneQueenMiddleOfBoard = setVal (mkBoard 4) 1 1 1
 oneQueenTopLeftOfBoard = setVal (mkBoard 4) 0 0 1
@@ -81,5 +83,12 @@ nQueensTestSuite =
     [
       Test "Generating first row from empty board" (generateNextValidBoards 0 [mkBoard 4] == [[[1,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[0,1,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[0,0,1,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[0,0,0,1],[0,0,0,0],[0,0,0,0],[0,0,0,0]]]),
       Test "Generating valid boards with top left corner and second row" (generateNextValidBoards 1 [oneQueenTopLeftOfBoard] == [[[1,0,0,0],[0,0,1,0],[0,0,0,0],[0,0,0,0]],[[1,0,0,0],[0,0,0,1],[0,0,0,0],[0,0,0,0]]])
+    ],
+    TestSuite "Test nQueens function"
+    [
+      Test "nQueens 1" (head (nQueens 1) == [[1]]),
+      Test "nQueens 2" (null (nQueens 2)),
+      Test "nQueens 3" (null (nQueens 3)),
+      Test "nQueens 4" (head (nQueens 4) == [[0,1,0,0],[0,0,0,1],[1,0,0,0],[0,0,1,0]])
     ]
   ]
