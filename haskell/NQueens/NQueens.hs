@@ -107,6 +107,7 @@ nQueensTestSuite =
       Test "nQueens 1" (head (nQueens 1) == [[1]]),
       Test "nQueens 2" (null (nQueens 2)),
       Test "nQueens 3" (null (nQueens 3)),
-      Test "nQueens 4" (head (nQueens 4) == [[0,1,0,0],[0,0,0,1],[1,0,0,0],[0,0,1,0]])
+      Test "nQueens 4" (head (nQueens 4) == [[0,1,0,0],[0,0,0,1],[1,0,0,0],[0,0,1,0]]),
+      Test "nQueens 5" (head (nQueens 5) == [[1,0,0,0,0],[0,0,1,0,0],[0,0,0,0,1],[0,1,0,0,0],[0,0,0,1,0]])
     ]
   ]
