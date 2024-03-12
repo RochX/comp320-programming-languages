@@ -1,4 +1,5 @@
 # Prolog Problem Set
+Xavier Silva, COMP-320
 ## Exercise 3
 Write a Prolog description of your family tree (based only on facts), going back to your grandparents and including all descendants. Be sure to include all relationships.
 ```
