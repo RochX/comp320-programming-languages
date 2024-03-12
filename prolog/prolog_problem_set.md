@@ -92,7 +92,7 @@ cousin(Xavier, Linda-Marie).
 Write a set of rules for family relationships, including all relationships from grandparents through two generations. Now add these to the facts of Problem 3, and eliminate as many of the facts as you can.
 
 ```
-% sexes of people in the family
+% facts about people in family
 male(William).
 female(Linda).
 female(Maria).
@@ -125,7 +125,6 @@ parent(X, Y) :- father(X, Y).
 grandparent(X, Z) :- parent(X, Y), parent(Y, Z).
 
 sibling(X, Y) :- parent(P, X), parent(P, Y).
-sibling(X, Y) :- sibling(Y, X)
 cousin(X, Y) :- parent(P, X), parent(Q, Y), sibling(P, Q).
 cousin(X, Y) :- cousin(Y, X).
 
